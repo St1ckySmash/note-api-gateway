@@ -6,11 +6,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
@@ -70,10 +70,15 @@ public class NoteControllerTests {
 
 	@Test
 	public void testUpdateNote() {
-		String note = "Updated Note";
+		Map<String, String> note = new HashMap<>();
+		note.put("title", "Updated Title");
+		note.put("content", "Updated Content");
+
 		doNothing().when(restTemplate).put(eq(targetServiceUrl + "/1"), any(HttpEntity.class));
 
 		ResponseEntity<String> response = noteController.updateNote(1L, note);
+
 		assertEquals("Note updated successfully.", response.getBody());
+		assertEquals(HttpStatus.OK, response.getStatusCode());
 	}
 }

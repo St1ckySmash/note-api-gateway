@@ -9,6 +9,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
+import java.util.Map;
+
 
 @Controller
 public class NoteController {
@@ -51,9 +53,17 @@ public class NoteController {
 	}
 
 	@PutMapping("/notes/{id}")
-	public ResponseEntity<String> updateNote(@PathVariable Long id, @RequestBody String note) {
-		HttpEntity<String> request = new HttpEntity<>(note);
-		restTemplate.put(targetServiceUrl + "/" + id, request);
-		return ResponseEntity.ok("Note updated successfully.");
+	public ResponseEntity<String> updateNote(@PathVariable Long id, @RequestBody Map<String, String> note) {
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<Map<String, String>> request = new HttpEntity<>(note, headers);
+
+			restTemplate.put(targetServiceUrl + "/" + id, request);
+			return ResponseEntity.ok("Note updated successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(500).body("Error updating note: " + e.getMessage());
+		}
 	}
 }
